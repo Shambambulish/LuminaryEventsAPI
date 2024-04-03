@@ -1,0 +1,32 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "luminary_test",
+            "database": "luminary",
+            "username": "noelle",
+            "password": "gamer"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "103.45.246.202",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "luminarytest",
+            "database": "luminarytester69_luminarytestdatabase",
+            "username": "luminarytester69_tester",
+            "password": "Gamerpassword123"
+        }
+    ]
+}

@@ -1,5 +1,5 @@
-import mysql from 'mysql2'
-import dotenv from 'dotenv'
+const mysql = require('mysql2')
+const dotenv = require('dotenv')
 dotenv.config()
 
 const pool = mysql.createPool({
@@ -17,64 +17,64 @@ async function getContents(stuff){
     }
 }
 
-export async function getOrders() {
+async function getOrders() {
     const [rows] = await pool.query('SELECT * FROM orders')
     await getContents(rows)
     return rows
 }
 
-export async function getOrder(id) {
+async function getOrder(id) {
     const [rows] = await pool.query('SELECT * FROM orders WHERE id = ?', [id])
     await getContents(rows)
     return rows[0]
 }
 
-export async function getOrderContents(id) {
+async function getOrderContents(id) {
     const [rows] = await pool.query(
         'SELECT devices.name, devices.description, devices.price_per_day, count FROM order_contents INNER JOIN devices ON order_contents.device_id = devices.id AND order_contents.order_id = ?', [id])
     await getContents(rows)
     return rows
 }
 
-export async function getUnfinishedOrders() {
+async function getUnfinishedOrders() {
     const [rows] = await pool.query('SELECT * FROM orders WHERE order_status <> "resolved"')
     await getContents(rows)
     return rows
 }
 
-export async function getUnpaidOrders() {
+async function getUnpaidOrders() {
     const [rows] = await pool.query('SELECT * FROM orders WHERE payment_resolved = 0')
     await getContents(rows)
     return rows
 }
 
-export async function getOrdersWithLatePayment() {
+async function getOrdersWithLatePayment() {
     const [rows] = await pool.query('SELECT * FROM orders WHERE payment_resolved = 0 AND payment_due_date < NOW()')
     await getContents(rows)
     return rows
 }
 
-export async function getFinishedOrders() {
+async function getFinishedOrders() {
     const [rows] = await pool.query('SELECT * FROM orders WHERE order_status = "resolved"')
     await getContents(rows)
     return rows
 }
 
-export async function getOrdersBeforeTime(time) {
+async function getOrdersBeforeTime(time) {
     const timeToSQLFormat = new Date(Date.parse(time)).toISOString().slice(0, 19).replace('T', ' ');
     const [rows] = await pool.query('SELECT * FROM orders WHERE order_start_date < ?', [timeToSQLFormat])
     await getContents(rows)
     return rows
 }
 
-export async function getOrdersAfterTime(time) {
+async function getOrdersAfterTime(time) {
     const timeToSQLFormat = new Date(Date.parse(time)).toISOString().slice(0, 19).replace('T', ' ');
     const [rows] = await pool.query('SELECT * FROM orders WHERE order_end_date > ?', [timeToSQLFormat])
     await getContents(rows)
     return rows
 }
 
-export async function getOrdersBetweenTimes(time_a, time_b) {
+async function getOrdersBetweenTimes(time_a, time_b) {
     const timeAToSQLFormat = new Date(time_a).toISOString().slice(0, 19).replace('T', ' ');
     const timeBToSQLFormat = new Date(time_b).toISOString().slice(0, 19).replace('T', ' ');
     const [rows] = await pool.query('SELECT * FROM orders WHERE order_start_date > ? AND order_start_date < ? OR order_end_date > ? AND order_end_date < ?', [timeAToSQLFormat, timeBToSQLFormat, timeAToSQLFormat, timeBToSQLFormat])
@@ -82,17 +82,17 @@ export async function getOrdersBetweenTimes(time_a, time_b) {
     return rows
 }
 
-export async function getDevices() {
+async function getDevices() {
     const [rows] = await pool.query('SELECT * FROM devices')
     return rows
 }
 
-export async function getDevice(id) {
+async function getDevice(id) {
     const [rows] = await pool.query('SELECT * FROM devices WHERE id = ?', [id])
     return rows[0]
 }
 
-export async function createOrder(total_price, order_start_date, order_length_days, order_end_date, payment_due_date, customer_name, customer_phone_number, customer_email, contents = []) {
+async function createOrder(total_price, order_start_date, order_length_days, order_end_date, payment_due_date, customer_name, customer_phone_number, customer_email, contents = []) {
     const [result] = await pool.query(`
     INSERT INTO orders (total_price, order_start_date, order_length_days, order_end_date, payment_due_date, customer_name, customer_phone_number, customer_email)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -110,7 +110,7 @@ export async function createOrder(total_price, order_start_date, order_length_da
     return getOrder(id)
 }
 
-export async function createDevice(name, description = null, price_per_day, total_stock) {
+async function createDevice(name, description = null, price_per_day, total_stock) {
     const [result] = await pool.query(`
     INSERT INTO devices (name, description, price_per_day, current_stock, total_stock)
     VALUES (?, ?, ?, ?, ?)
@@ -119,7 +119,7 @@ export async function createDevice(name, description = null, price_per_day, tota
     return getDevice(id)
 }
 
-export async function updateOrder(id, total_price = null, order_start_date = null, order_length_days = null, order_end_date = null, payment_due_date = null, customer_name = null, customer_phone_number = null, customer_email = null, contents = null) {
+async function updateOrder(id, total_price = null, order_start_date = null, order_length_days = null, order_end_date = null, payment_due_date = null, customer_name = null, customer_phone_number = null, customer_email = null, contents = null) {
     const order = await getOrder(id)
     
     const newOrder = {
@@ -156,7 +156,7 @@ export async function updateOrder(id, total_price = null, order_start_date = nul
     return getOrder(id)
 }
 
-export async function updateDevice(id, name = null, description = null, price_per_day = null, current_stock = null, total_stock = null) {
+async function updateDevice(id, name = null, description = null, price_per_day = null, current_stock = null, total_stock = null) {
     const device = await getDevice(id)
 
     const newDevice = {
@@ -176,7 +176,7 @@ export async function updateDevice(id, name = null, description = null, price_pe
     return getDevice(id)
 }
 
-export async function deleteOrder(id) {
+async function deleteOrder(id) {
     await pool.query(`
         DELETE FROM order_contents
         WHERE order_id = ?
@@ -189,7 +189,7 @@ export async function deleteOrder(id) {
     return true
 }
 
-export async function deleteDevice(id) {
+async function deleteDevice(id) {
     await pool.query(`
     DELETE FROM order_contents
     WHERE device_id = ?
@@ -201,4 +201,25 @@ export async function deleteDevice(id) {
     `, [id])
 
     return true
+}
+
+module.exports = {
+    getOrders,
+    getOrder,
+    getOrderContents,
+    getUnfinishedOrders,
+    getUnpaidOrders,
+    getOrdersWithLatePayment,
+    getFinishedOrders,
+    getOrdersBeforeTime,
+    getOrdersAfterTime,
+    getOrdersBetweenTimes,
+    getDevices,
+    getDevice,
+    createOrder,
+    createDevice,
+    updateOrder,
+    updateDevice,
+    deleteOrder,
+    deleteDevice
 }

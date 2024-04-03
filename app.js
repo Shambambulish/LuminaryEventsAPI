@@ -1,8 +1,8 @@
-import express from 'express'
+const express = require('express')
 const app = express()
 app.use(express.json())
 
-import { getOrders, getOrder, getOrderContents, getUnfinishedOrders, getUnpaidOrders, getOrdersWithLatePayment, getFinishedOrders, getOrdersBeforeTime, getOrdersAfterTime, getOrdersBetweenTimes, getDevices, getDevice, createOrder, createDevice, updateOrder, updateDevice, deleteOrder, deleteDevice} from './database.js'
+const { getOrders, getOrder, getOrderContents, getUnfinishedOrders, getUnpaidOrders, getOrdersWithLatePayment, getFinishedOrders, getOrdersBeforeTime, getOrdersAfterTime, getOrdersBetweenTimes, getDevices, getDevice, createOrder, createDevice, updateOrder, updateDevice, deleteOrder, deleteDevice } = require('./database.js')
 
 app.listen(3000, () => console.log('Server started on port 3000'))
 
